@@ -9,9 +9,9 @@
               width="1.5rem"
               height="1.5rem"
               round
-              src="https://img01.yzcdn.cn/vant/cat.jpeg"
+              :src="userInfo.photo"
             />
-            <span class="mobile">13111111111</span>
+            <span class="mobile">{{userInfo.name}}</span>
           </van-col>
           <van-col span="5" offset="7">
             <van-button round size="mini" class="edit-btn">编辑资料</van-button>
@@ -20,16 +20,16 @@
         <van-row>
           <van-grid class="grid" :border="false">
             <van-grid-item text="头条">
-              <template #icon>0</template>
+              <template #icon>{{userInfo.art_count}}</template>
             </van-grid-item>
             <van-grid-item text="粉丝">
-              <template #icon>0</template>
+              <template #icon>{{userInfo.fans_count}}</template>
             </van-grid-item>
             <van-grid-item text="关注">
-              <template #icon>0</template>
+              <template #icon>{{userInfo.follow_count}}</template>
             </van-grid-item>
             <van-grid-item text="获赞">
-              <template #icon>0</template>
+              <template #icon>{{userInfo.like_count}}</template>
             </van-grid-item>
           </van-grid>
         </van-row>
@@ -66,9 +66,16 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { getUserInfoAPI } from '@/api'
 export default {
+  name: 'My',
   computed: {
     ...mapGetters(['isLogin'])
+  },
+  data() {
+    return {
+      userInfo: {}
+    }
   },
   methods: {
     async logout() {
@@ -76,8 +83,27 @@ export default {
         title: '黑马头条',
         message: '是否确认退出该账号'
       })
+      console.log(this)
       this.$store.commit('SET_TOKEN', {})
+    },
+    // 获取用户自己信息
+    async getUserInfo() {
+      try {
+        if (!this.isLogin) return
+        const { data } = await getUserInfoAPI()
+        this.userInfo = data.data
+        console.log(this.userInfo)
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('用户认证失败，请重新登录')
+        } else {
+          throw error
+        }
+      }
     }
+  },
+  created() {
+    this.getUserInfo()
   }
 }
 </script>
