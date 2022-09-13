@@ -11,19 +11,33 @@
       <van-tab v-for="item in channels" :key="item.id" :title="item.name">
         <ArticleList :id="item.id"></ArticleList>
       </van-tab>
-      <span class="toutiao toutiao-gengduo"></span>
+      <span class="toutiao toutiao-gengduo" @click="isShow = true"></span>
     </van-tabs>
+    <van-popup
+      v-model="isShow"
+      closeable
+      close-icon-position="top-left"
+      position="bottom"
+      :style="{ height: '100%' }"
+    >
+      <ChannelEdit
+        :mychannels="channels"
+        @change-active=";[(isShow = false), (active = $event)]"
+      ></ChannelEdit>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { getChannelAPI } from '@/api'
 import ArticleList from '@/views/home/components/ArticleList.vue'
+import ChannelEdit from '@/views/home/components/ChannelEdit'
 export default {
   data() {
     return {
       active: 0,
-      channels: []
+      channels: [],
+      isShow: false
     }
   },
   methods: {
@@ -47,7 +61,8 @@ export default {
     this.getChannel()
   },
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   }
 }
 </script>

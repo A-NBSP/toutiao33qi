@@ -10,27 +10,24 @@
       v-else-if="article.cover.type === 1"
       :label="label"
     >
-      <van-image
-        width="100"
-        height="100"
-        :src="article.cover.images[0]"
-      />
+      <van-image width="100" height="100" :src="article.cover.images[0]" />
     </van-cell>
     <van-cell :title="article.title" v-else>
-    <template #label>
-      <van-image
-        width="100"
-        height="100"
-        v-for="(item,index) in article.cover.images"
-        :key="index"
-        :src="item"
-      />
-    </template>
+      <template #label>
+        <van-image
+          width="100"
+          height="100"
+          v-for="(item, index) in article.cover.images"
+          :key="index"
+          :src="item"
+        />
+      </template>
     </van-cell>
   </div>
 </template>
 
 <script>
+import dayjs from '@/utils/dayjs'
 export default {
   name: 'ArticleItem',
   props: {
@@ -43,10 +40,10 @@ export default {
     label() {
       /*eslint-disable*/
       const { aut_name, comm_count, pubdate } = this.article
-      return `${aut_name} ${comm_count}评论 ${pubdate}`
+      return `${aut_name} ${comm_count}评论 ${dayjs(pubdate).fromNow()}`
     }
   }
 }
 </script>
 
-<style></style>
+<style scoped lang="less"></style>

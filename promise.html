@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      status = PENDING
+  <title>Document</title>
+</head>
+
+<body>
+  <script>
+    // 手撕promise
+    // 1.executor执行器函数
+    // 2.resolve把promise变为成功状态,reject把promise变为失败状态
+    // 3.value记录成功的原因,reason记录失败的原因,status记录promise的状态
+    // 4.promise的三种状态,1.pending准备状态,promise未传值,2.fulfilled成功状态,promise执行resolve()时,3.rejected失败状态,promise执行reject()时
+    // 5.promise状态只能改变一次,只能从pending-->fulfilled或者pending-->rejected,不能在成功态与失败态相互转换
+    // 6.promise中任何错误都会使promise变为失败态
+    // 7.promise必须有then方法,onFulfilled:成功的回调,onRejected:失败的回调
+    // 8. 设计模式: 发布订阅模式: 订阅一些行为, 再在合适时机去执行(发布)
+    //   - 最简单: DOM事件 
+    //   - vue当中的自定义事件: $emit
+    //   - eventBus 
+    //   - promise 异步的时候
+    // 9. promise除了链式调用以外, 还可以多次调用
+    const PENDING = 'pending'
+    const FULFILLED = 'fulfilled'
+    const REJECTED = 'rejected'
+    class Promise {
+      value
+      reason
+      onFulfilledCallBacks = []
+      onRejectedCallBacks = []
+      constructor(executor) {
+        const resolve = (value) => {
+          if (this.status === PENDING) {
+            this.value = value
+            this.status = FULFILLED
+            this.onFulfilledCallBacks.forEach(cb => cb())
+          }
+        }
+        const reject = (reason) => {
+          if (this.status === PENDING) {
+            this.reason = reason
+            this.status = REJECTED
+            this.onRejectedCallBacks.forEach(cb => cb())
+          }
+        }
+        try {
+          executor(resolve, reject)
+        } catch (error) {
+          reject(error)
+        }
+      }
+      then(onFulfilled, onRejected) {
+        if (this.status === FULFILLED) {
+          onFulfilled(this.value)
+        }
+        if (this.status === REJECTED) {
+          onRejected(this.reason)
+        }
+        if (this.status === PENDING) {
+          this.onFulfilledCallBacks.push(() => {
+            onFulfilled(this.value)
+          })
+          // this.onRejected = onRejected
+          this.onRejectedCallBacks.push(() => {
+            onRejected(this.reason)
+          })
+        }
+      }
+    }
+    const p = new Promise((resolve, reject) => {
+      // console.log(a.a);
+      setTimeout(() => {
+        // resolve('成功')
+        reject('失败') //依然是成功
+      }, 2000)
+    })
+
+    p.then(
+      (res) => console.log(res),
+      (err) => console.log(err)
+    )
+  </script>
+</body>
+
+</html>
