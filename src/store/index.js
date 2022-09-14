@@ -8,14 +8,14 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState({
       key: 'TOUTIAO_TOKEN',
-      reducer({ tokenObj }) {
-        return { tokenObj }
+      reducer({ tokenObj, myChannels }) {
+        return { tokenObj, myChannels }
       }
     })
   ],
   state: {
-    a: 1,
-    tokenObj: {}
+    tokenObj: {},
+    myChannels: []
   },
   // 相当于组件中的计算属性
   getters: {
@@ -26,6 +26,13 @@ export default new Vuex.Store({
   mutations: {
     SET_TOKEN(state, token) {
       state.tokenObj = token
+    },
+    /**
+     * 设置myChannels
+     * @param {Array} channels 删除或添加后的最新值
+     */
+    SET_MY_CHANNELS(state, channels) {
+      state.myChannels = channels
     }
   },
   actions: {},
